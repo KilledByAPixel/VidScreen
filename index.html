@@ -1,0 +1,274 @@
+<html><head><title>Cryptovoxels VidScreen Emulator</title></head>
+<style>
+body { background:#111; color:white }
+textarea { width:600px; background:black; }
+#textarea_code { color:#eee; min-height:400px }
+#textarea_error { color:red; min-height:100px; border:1px solid #f00; }
+iframe { display:none }
+td { vertical-align: text-top }
+a { color:#f33 }
+canvas
+{
+    width:400px;
+    height:400px;
+    image-rendering:-moz-crisp-edges;
+    image-rendering:pixelated;
+    border:2px solid #ccc;
+}
+</style>
+<body>
+<table><tr>
+<td><canvas id=canvas_main></canvas><br>
+<button onclick=reload()>Reload</button>
+<button onclick=save()>Save</button>
+<button onclick=screenshot()>Screenshot</button>
+<input type=checkbox id=input_autoReload checked>Auto Reload
+<input type=checkbox id=input_autoStart checked onchange=autoStart=this.checked>Auto Start
+</td><td>
+<textarea id=textarea_code onkeydown=newCodeTime=9></textarea><br>
+<textarea id=textarea_error disabled style=display:none></textarea></td>
+</tr></table>
+<h2>VidScreen Emulator and Live Editor</h2>
+<p>This is a simple system for testing out your Cryptovoxels scripts! It also includes a small library of useful functions and a small demo game that shows how to use it.</p>
+<p>Controls: Use arrow keys or WASD to control. Button A is mapped to Z or spacebar and button B is mapped to X or control. You can also use mouse left/right buttons for A and B.</p>
+<p>By Frank Force <a href=https://twitter.com/KilledByAPixel>Twitter</a> / <a href=https://github.com/KilledByAPixel>GitHub</a> / 
+<a href=https://www.frankforce.com>Blog</a></p>
+<b>Cryptovoxels VidScreen Interface Reference</b>
+<ul>
+<li>feature.screen = a 64 wide x 64 high x 3 bytes (r, g, b) array you can use to draw to the screen.</li>
+<li>on('start', event=>{}) = triggers when player clicks the vidscreen to activate it.</li>
+<li>on('frame', event=>{}) = triggers every frame (30 fps).</li>
+<li>on('keys', event=>{}) = triggers when a key is down, available keys are arrows, A, and B.</li>
+<li>More info about the <a href=https://www.cryptovoxels.com/docs/scripting>cryptovoxels scripting engine.</a></li>
+</ul>
+<a id=link></a>
+<script src=vidscreen.js></script>
+<script>
+
+'use strict';
+
+// set to live edit mode
+liveEdit = 1;
+
+const save = ()=>
+{
+	link.href = URL.createObjectURL(new Blob([textarea_code.value])),
+	link.download = 'code.txt';
+	link.click();
+}
+
+const screenshot = ()=>
+{
+	link.href = canvas_main.toDataURL('image/png'),
+	link.download = 'screenshot.png';
+	link.click();
+}
+
+const setCode = (code)=>
+{
+	if (activeProgram)
+    	activeProgram.remove();
+
+	// create new iframe
+	document.body.appendChild( activeProgram = document.createElement('iframe'));
+    const iframe_content = activeProgram.contentWindow || activeProgram.contentDocument;
+    iframe_content.feature = feature = activeVidscreen = new VidScreen();
+
+	// run user code
+	hasError = 0;
+    textarea_error.style.display = 'none';
+    try { iframe_content.eval(code); }
+	catch (e) { showError(e); }
+}
+
+const showError = e=>
+{
+	hasError = 1;
+	textarea_error.style.display = '';
+	textarea_error.value = e.message || e;
+}
+
+const reload = ()=>
+{
+    vidscreenInit(true);
+
+	// set new user code
+	setCode(textarea_code.value);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// allow drag and drop code into editor
+ondrop = e=>
+{
+	textarea_code.ondragleave();
+	if (e.target != textarea_code || !e.dataTransfer.files.length)
+		return false;
+
+	// only accept text files
+	if (e.dataTransfer.files[0].type.slice(0,4) != 'text')
+		return false;
+
+	textarea_code.focus();
+    const reader = new FileReader();
+    reader.onload = f=> setCode(textarea_code.value = f.target.result);
+	reader.readAsText(e.dataTransfer.files[0]);
+    return false;
+}
+
+// show drag over event
+textarea_code.ondragenter  = ()=> textarea_code.style.background = 'red';
+textarea_code.ondragleave  = ()=> textarea_code.style.background = '';
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// demo
+
+const demoCode =`// JumpIt! by Frank Force
+let distance, playing, ground, Y, V;
+
+const reset = ()=>
+{
+    playing = 1;
+    Y = 25;
+    distance = V = 0;
+}
+
+feature.on('start', e=> 
+{
+    reset();
+});
+
+feature.on('frame', e=> 
+{
+    clearScreen();
+    if (playing)
+        distance += 2;
+
+    // draw ground
+    for (let i=3; i--;)
+    {
+        const j = i+distance/47|0;
+        setDrawColorHSLA(j/29);
+        const g = 48-Math.cos(j*j)*15|0;
+        drawRectOutline(j*47-distance-32, g, 45, 1e4);
+        i && (ground=g);
+    }
+
+    // sub step physics
+    for (let i=2; i--;)
+    {
+        Y -= V -= .06;
+        if (Y > ground)
+        {
+            // check for safe landing
+            V = 0;
+            Y < ground+4 ? Y = ground : playing = 0;
+        }
+    }
+    
+    // draw player
+    setDrawColorHSLA(distance/50, 1, .7);
+    drawRect(9, Y-9, 6, 9);
+
+    // draw score
+    setDrawColorHSLA(0, 0, 1);
+    drawNumber(distance/47|0, 24, 0);
+});
+
+feature.on('keys', e=>
+{
+    // jump
+    if (e.keys.a)
+        Y-ground || (V=2);
+    if (e.keys.b)
+        reset();
+});
+
+/////////////////////////////////////////////////////////////////////////
+// vidscreen helper functions by frank force
+
+const clamp       = (v, max=1, min=0)=> v < min ? min : v > max ? max : v;
+const percent     = (v, a, b)=>         b-a ? clamp((v-a) / (b-a)) : 0;
+const lerp        = (p, a, b)=>         a + clamp(p) * (b-a);
+const clearScreen = ()=>                feature.screen = [];
+
+let drawColor = [255, 255, 255, 1];
+const setDrawColorRGBA = (r=0, g=0, b=0, a=1)=> drawColor = [r, g, b, a];
+const setDrawColorHSLA = (h=0, s=1, l=.5, a=1)=>
+{
+    let r, g, b;
+    if (s)
+    {
+        const f = (p, q, t)=>
+        {
+            t = ((t%1)+1)%1;
+            return t < 1/6 ? p+(q-p)*6*t :
+                t < 1/2 ? q :
+                t < 2/3 ? p+(q-p)*(2/3-t)*6 : 
+                p;
+        }
+
+        const q = l < .5 ? l*(1+s) : l+s-l*s, p = 2*l-q;
+        r = f(p, q, h + 1/3);
+        g = f(p, q, h);
+        b = f(p, q, h - 1/3);
+    }
+    else
+        r = g = b = l;
+
+    setDrawColorRGBA(r*255|0, g*255|0, b*255|0, a);
+}
+
+const drawPixel = (x, y)=>
+{
+    const a = drawColor[3];
+    if (a <= 0 || x < 0 || x >= feature.screenWidth || y < 0 || y >= feature.screenHeight)
+        return;
+
+    const i = 3*((x|0) + (y|0)*feature.screenWidth);
+    if (a == 1)
+    {
+        feature.screen[i+0] = drawColor[0];
+        feature.screen[i+1] = drawColor[1];
+        feature.screen[i+2] = drawColor[2];
+        return;
+    }
+
+    // draw pixel with alpha
+    const r = feature.screen[i+0] || 0;
+    const g = feature.screen[i+1] || 0;
+    const b = feature.screen[i+2] || 0;
+    feature.screen[i+0] = lerp(a, r, drawColor[0],255);
+    feature.screen[i+1] = lerp(a, g, drawColor[1],255);
+    feature.screen[i+2] = lerp(a, b, drawColor[2],255);
+}
+
+const drawRect = (x, y, w, h)=>
+{
+    for (let i = x; i < x + w; ++i)
+    for (let j = y; j < y + h; ++j)
+        drawPixel(i,j);
+}
+
+const drawRectOutline = (x, y, w, h)=>
+{
+    for (let i = x; i < x + w; ++i)
+        drawPixel(i,y), drawPixel(i,y+h-1);
+    for (let i = y; i < y + h; ++i)
+        drawPixel(x,i), drawPixel(x+w-1,i);
+}
+
+const drawNumber = (n,x,y)=>
+{
+    n = (n|0)+'';
+    for (const j of n)
+    {
+        for (let i=7;i--;)
+            '{O<7w?'.charCodeAt(j)&2**i&&drawRect(i>4|i<3?x:x+5,y+(i%2?1:i?5:9),i>2?2:7,i>2?5:1);
+        x += 9;
+    }
+}
+`
+
+reload(textarea_code.value = demoCode);
+
+</script></body></html>

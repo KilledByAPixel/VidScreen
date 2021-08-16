@@ -81,8 +81,8 @@ setInterval( ()=>
 	if (keysPressed[37] || keysPressed[65]) keys.left = 1;
 	if (keysPressed[38] || keysPressed[87]) keys.up = 1;
 	if (keysPressed[40] || keysPressed[83]) keys.down = 1;
-	if (keysPressed[32] || keysPressed[90] || mouseDown[0]) keys.a = 1;
-	if (keysPressed[17] || keysPressed[88] || mouseDown[2]) keys.b = 1;
+	if (keysPressed[32] || keysPressed[65] || mouseDown[0]) keys.a = 1;
+	if (keysPressed[17] || keysPressed[83] || mouseDown[2]) keys.b = 1;
 
 	// keys event
 	Object.keys(keys).length && activeVidscreen.callback('keys', {keys});

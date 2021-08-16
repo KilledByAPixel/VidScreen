@@ -30,7 +30,7 @@ canvas
 </tr></table>
 <h2>VidScreen Emulator and Live Editor</h2>
 <p>This is a simple system for testing out your Cryptovoxels scripts! It also includes a small library of useful functions and a small demo game that shows how to use it.</p>
-<p>Controls: Use arrow keys or WASD to control. Button A is mapped to Z or spacebar and button B is mapped to X or control. You can also use mouse left/right buttons for A and B.</p>
+<p>Controls: Use arrow keys or WASD to control. Button A is mapped to A or spacebar and button B is mapped to S or control. You can also use mouse left/right buttons for A and B.</p>
 <p>By Frank Force <a href=https://twitter.com/KilledByAPixel>Twitter</a> / <a href=https://github.com/KilledByAPixel>GitHub</a> / 
 <a href=https://www.frankforce.com>Blog</a></p>
 <b>Cryptovoxels VidScreen Interface Reference</b>
@@ -43,7 +43,7 @@ canvas
 <li>More info about the <a href=https://www.cryptovoxels.com/docs/scripting>cryptovoxels scripting engine.</a></li>
 </ul>
 <a id=link></a>
-<script src=vidscreen.js?1></script>
+<script src=vidscreen.js?2></script>
 <script>
 
 'use strict';
@@ -126,12 +126,12 @@ textarea_code.ondragleave  = ()=> textarea_code.style.background = '';
 const demoCode =`// JumpIt! by Frank Force
 // A = Jump / B = Restart
 
-let distance, playing, ground, Y, V;
-const W=22;
+let distance, playing, ground, Y, V, W;
 
 const reset = ()=>
 {
     Y = 0;
+    W = 22;
     distance = V = 0;
     playing = 1;
 }

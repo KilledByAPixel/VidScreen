@@ -192,7 +192,7 @@ feature.on('keys', e=>
 const clamp       = (v, max=1, min=0)=> v < min ? min : v > max ? max : v;
 const percent     = (v, a, b)=>         b-a ? clamp((v-a) / (b-a)) : 0;
 const lerp        = (p, a, b)=>         a + clamp(p) * (b-a);
-const clearScreen = ()=>                feature.screen.fill(0);
+const clearScreen = (v=0)=>             feature.screen.fill(v);
 
 let drawColor = [255, 255, 255, 1];
 const setDrawColorRGBA = (r=0, g=0, b=0, a=1)=> drawColor = [r, g, b, a];

@@ -7,3 +7,5 @@ It also includes a small library of useful functions and a small demo game that 
 You can read more info about the [cryptovoxels scripting engine here](https://www.cryptovoxels.com/docs/scripting).
 
 ## [Try the Live Demo!](https://killedbyapixel.github.io/VidScreen/)
+
+![Screenshot](/screenshot.png) 

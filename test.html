@@ -76,7 +76,7 @@ const setDrawColorHSLA = (h=0, s=1, l=.5, a=1)=>
     else
         r = g = b = l;
 
-    setDrawColorRGBA(r*255|0, g*255|0, b*255|0, a);
+    setDrawColorRGBA(r*255, g*255, b*255, a);
 }
 
 const drawPixel = (x, y)=>
@@ -88,9 +88,9 @@ const drawPixel = (x, y)=>
     const i = 3*((x|0) + (y|0)*feature.screenWidth);
     if (a == 1)
     {
-        feature.screen[i+0] = drawColor[0];
-        feature.screen[i+1] = drawColor[1];
-        feature.screen[i+2] = drawColor[2];
+        feature.screen[i+0] = drawColor[0]|0;
+        feature.screen[i+1] = drawColor[1]|0;
+        feature.screen[i+2] = drawColor[2]|0;
         return;
     }
 
@@ -98,9 +98,9 @@ const drawPixel = (x, y)=>
     const r = feature.screen[i+0] || 0;
     const g = feature.screen[i+1] || 0;
     const b = feature.screen[i+2] || 0;
-    feature.screen[i+0] = lerp(a, r, drawColor[0],255);
-    feature.screen[i+1] = lerp(a, g, drawColor[1],255);
-    feature.screen[i+2] = lerp(a, b, drawColor[2],255);
+    feature.screen[i+0] = lerp(a, r, drawColor[0], 255) |0;
+    feature.screen[i+1] = lerp(a, g, drawColor[1], 255) |0;
+    feature.screen[i+2] = lerp(a, b, drawColor[2], 255) |0;
 }
 
 const drawRect = (x, y, w, h)=>

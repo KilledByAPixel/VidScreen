@@ -10,7 +10,7 @@ class VidScreen
 	constructor()
     {
         this.screenWidth = this.screenHeight = 64;
-        this.screen = new Array(this.screenWidth**2 * 3);
+        this.screen = new Uint8Array(this.screenWidth*this.screenHeight * 3);
         this.callbacks = [];
     }
 

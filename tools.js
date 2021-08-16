@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// A collection of tools for Cryptovox VidsSreens by Frank Force [MIT]
+// A collection of tools for Cryptovoxels VidScreens by Frank Force [MIT]
 
 const clamp       = (v, max=1, min=0)=> v < min ? min : v > max ? max : v;
 const percent     = (v, a, b)=>         b-a ? clamp((v-a) / (b-a)) : 0;

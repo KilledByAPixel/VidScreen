@@ -125,6 +125,7 @@ textarea_code.ondragleave  = ()=> textarea_code.style.background = '';
 
 const demoCode =`// JumpIt! by Frank Force
 let distance, playing, ground, Y, V;
+const W=22;
 
 const reset = ()=>
 {
@@ -141,16 +142,15 @@ feature.on('start', e=>
 feature.on('frame', e=> 
 {
     clearScreen();
-    if (playing)
-        distance += 2;
+    playing && ++distance;
 
     // draw ground
-    for (let i=3; i--;)
+    for (let i=5; i--;)
     {
-        const j = i+distance/47|0;
+        const j = i+distance/W|0;
         setDrawColorHSLA(j/29);
-        const g = 48-Math.cos(j*j)*15|0;
-        drawRectOutline(j*47-distance-32, g, 45, 1e4);
+        const g = 47-Math.cos(j*j)*15|0;
+        drawRectOutline(j*W-distance-7, g, W-3, 1e4);
         i && (ground=g);
     }
 
@@ -162,7 +162,7 @@ feature.on('frame', e=>
         {
             // check for safe landing
             V = 0;
-            Y < ground+4 ? Y = ground : playing = 0;
+            Y < ground+3 ? Y = ground : playing = 0;
         }
     }
     
@@ -172,7 +172,7 @@ feature.on('frame', e=>
 
     // draw score
     setDrawColorHSLA(0, 0, 1);
-    drawNumber(distance/47|0, 24, 0);
+    drawNumber(distance/W|0, 24, 0);
 });
 
 feature.on('keys', e=>

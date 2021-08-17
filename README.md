@@ -8,4 +8,6 @@ You can read more info about the [cryptovoxels scripting engine here](https://ww
 
 ## [Try the Live Demo!](https://killedbyapixel.github.io/VidScreen/)
 
-![Screenshot](/screenshot.png) 
+![Editor Screenshot](/screenshot1.png)
+
+![Cryptovoxels Screenshot](/screenshot2.png)

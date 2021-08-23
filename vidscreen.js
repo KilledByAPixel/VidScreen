@@ -39,8 +39,8 @@ const vidscreenInit = ()=>
 	keysPressed = [];
     mouseDown   = [];
 	onblur      = e=> keysPressed = [];
-	onkeydown   = e=> e.repeat || (keysPressed[e.keyCode] = 1);
-	onkeyup     = e=> keysPressed[e.keyCode] = 0;
+	onkeydown   = e=> keysPressed[e.keyCode] = 1;
+	//onkeyup     = e=> keysPressed[e.keyCode] = 0;
     canvas_main.onmousedown   = e=> mouseDown[e.button] = 1;
     canvas_main.onmouseup     = e=> mouseDown[e.button] = 0;
     canvas_main.oncontextmenu = e=> false;
@@ -83,6 +83,9 @@ setInterval( ()=>
 	if (keysPressed[40] || keysPressed[83]) keys.down = 1;
 	if (keysPressed[32] || keysPressed[65] || mouseDown[0]) keys.a = 1;
 	if (keysPressed[17] || keysPressed[83] || mouseDown[2]) keys.b = 1;
+
+	// clear keys pressed
+	keysPressed = [];
 
 	// keys event
 	Object.keys(keys).length && activeVidscreen.callback('keys', {keys});

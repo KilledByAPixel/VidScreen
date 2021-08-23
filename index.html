@@ -22,6 +22,8 @@ canvas
 <button onclick=reload()>Reload</button>
 <button onclick=save()>Save</button>
 <button onclick=screenshot()>Screenshot</button>
+<button onclick=share()>Update URL</button>
+<br>
 <input type=checkbox id=input_autoReload checked>Auto Reload
 <input type=checkbox id=input_autoStart checked onchange=autoStart=this.checked>Auto Start
 </td><td>
@@ -63,6 +65,13 @@ const screenshot = ()=>
 	link.href = canvas_main.toDataURL('image/png'),
 	link.download = 'screenshot.png';
 	link.click();
+}
+
+const share = ()=>
+{
+    const searchParams = new URLSearchParams();
+    searchParams.set("c", JSONCrush.crush(code));
+    window.location.search = searchParams.toString();
 }
 
 const setCode = (code)=>
@@ -269,9 +278,23 @@ const drawNumber = (n,x,y)=>
             '{O<7w?'.charCodeAt(j)&2**i&&drawRect(i>4|i<3?x:x+5,y+(i%2?1:i?5:9)-1,i>2?2:7,i>2?5:1);
         x += 9;
     }
-}
-`
+}`;
 
-reload(textarea_code.value = demoCode);
+///////////////////////////////////////////////////////////////////////////////// 
+// JSONCrush v1.1.6 by Frank Force - https://github.com/KilledByAPixel/JSONCrush
+///////////////////////////////////////////////////////////////////////////////// 
+
+const JSONCrush = {crush:(a,b=50)=>{var f=[];for(var d=127;--d;)(48<=d&&57>=d||65<=d&&90>=d||97<=d&&122>=d||"-_.!~*'()".includes(String.fromCharCode(d)))&&f.push(String.fromCharCode(d));for(d=32;255>d;++d){var h=String.fromCharCode(d);"\\"==h||f.includes(h)||f.unshift(h)}a=a.replace(/\u0001/g,"");a=q(a);d=f.length;h="";var c={};for(var g=2;g<b;g++)for(var k=0;k<a.length-g;++k){var e=a.substr(k,g);if(!c[e]){var m=e.charCodeAt(0),n=e.charCodeAt(e.length-1);if(!(56320<=m&&57343>=m||55296<=n&&56319>=n)){m=1;for(n=a.indexOf(e,k+g);0<=n;++m)n=a.indexOf(e,n+g);1<m&&(c[e]=m)}}}for(;;){for(;d--&&a.includes(f[d]););if(0>d)break;b=f[d];var l=void 0;g=0;k=encodeURI(encodeURIComponent(b)).replace(/%../g,"i").length;for(var p in c)e=c[p],e=(e-1)*encodeURI(encodeURIComponent(p)).replace(/%../g,"i").length-(e+1)*k,h.length||(e-=encodeURI(encodeURIComponent("\u0001")).replace(/%../g,"i").length),0>=e?delete c[p]:e>g&&(l=p,g=e);if(!l)break;a=a.split(l).join(b)+b+l;h=b+h;g={};for(var p in c){c=p.split(l).join(b);k=0;for(e=a.indexOf(c);0<=e;++k)e=a.indexOf(c,e+c.length);1<k&&(g[c]=k)}c=g}f=h;l=a;f.length&&(l+="\u0001"+f);return l+"_"},uncrush:a=>{a=a.substring(0,a.length-1);var b=a.split("\u0001");a=b[0];if(1<b.length){b=b[1];for(var f of b)a=a.split(f),a=a.join(a.pop())}return q(a,0)}};var q=(a,b=1)=>{var f=[['"',"'"],["':","!"],[",'","~"],["}",")","\\","\\"],["{","(","\\","\\"]],d=(h,c)=>h.replace(new RegExp(`${(c[2]?c[2]:"")+c[0]}|${(c[3]?c[3]:"")+c[1]}`,"g"),g=>g===c[0]?c[1]:c[0]);if(b)for(b=0;b<f.length;++b)a=d(a,f[b]);else for(b=f.length;b--;)a=d(a,f[b]);return a}
+
+///////////////////////////////////////////////////////////////////////////////// 
+// load from url
+let code = demoCode;
+const url = new URL(window.location.href);
+if (url.searchParams && url.searchParams.has('c'))
+{
+    try { code = JSONCrush.uncrush(url.searchParams.get('c')); }
+    catch(e) { alert('Error loading url!'); }
+}
+reload(textarea_code.value = code);
 
 </script></body></html>

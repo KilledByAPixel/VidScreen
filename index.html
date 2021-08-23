@@ -69,6 +69,7 @@ const screenshot = ()=>
 
 const share = ()=>
 {
+    const code = textarea_code.value;
     const searchParams = new URLSearchParams();
     searchParams.set("c", JSONCrush.crush(code));
     window.location.search = searchParams.toString();

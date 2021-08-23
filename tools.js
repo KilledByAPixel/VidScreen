@@ -78,7 +78,7 @@ const drawNumber = (n,x,y)=>
     for (const j of n)
     {
         for (let i=7;i--;)
-            '{O<7w?'.charCodeAt(j)&2**i&&drawRect(i>4|i<3?x:x+5,y+(i%2?1:i?5:9),i>2?2:7,i>2?5:1);
+            '{O<7w?'.charCodeAt(j)&2**i&&drawRect(i>4|i<3?x:x+5,y+(i%2?1:i?5:9)-1,i>2?2:7,i>2?5:1);
         x += 9;
     }
 }

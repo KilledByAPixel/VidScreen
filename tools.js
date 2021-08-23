@@ -5,6 +5,7 @@ const clamp       = (v, max=1, min=0)=> v < min ? min : v > max ? max : v;
 const percent     = (v, a, b)=>         b-a ? clamp((v-a) / (b-a)) : 0;
 const lerp        = (p, a, b)=>         a + clamp(p) * (b-a);
 const clearScreen = (v=0)=>             feature.screen.fill(v);
+const seededRand  = (seed, max=1)=>     Math.sin(seed)**2 * 1e9 % 1 * max;
 
 let drawColor = [255, 255, 255, 1];
 const setDrawColorRGBA = (r=0, g=0, b=0, a=1)=> drawColor = [r, g, b, a];
